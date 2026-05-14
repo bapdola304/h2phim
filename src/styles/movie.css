@@ -1,0 +1,80 @@
+/* Giao diện movie site — biến & layout chung */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--movie-bg, #07080d);
+}
+
+:root {
+  --movie-bg: #07080d;
+  --movie-surface: rgba(18, 20, 28, 0.85);
+  --movie-border: rgba(255, 255, 255, 0.08);
+  --movie-text: #f4f4f5;
+  --movie-muted: #a1a1aa;
+  --movie-accent: #e11d48;
+  --movie-accent-soft: rgba(225, 29, 72, 0.2);
+  --movie-glow: rgba(225, 29, 72, 0.35);
+  --movie-radius: 14px;
+  --movie-font: 'DM Sans', system-ui, sans-serif;
+  --movie-display: 'Bebas Neue', 'Impact', sans-serif;
+}
+
+.movie-app {
+  min-height: 100vh;
+  background: var(--movie-bg);
+  color: var(--movie-text);
+  font-family: var(--movie-font);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.movie-app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(225, 29, 72, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(59, 130, 246, 0.06), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.movie-main {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 3rem;
+}
+
+@keyframes movie-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.movie-page-enter {
+  animation: movie-fade-in 0.45s ease forwards;
+}
+
+/* Scrollbar */
+.movie-app ::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.movie-app ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+.movie-app ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
