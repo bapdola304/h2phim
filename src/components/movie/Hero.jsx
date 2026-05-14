@@ -146,9 +146,6 @@ export function Hero({ movie, movies, variant = 'default', children }) {
                 ▶ Xem phim
               </Link>
             )}
-            <Link to="/browse" className="movie-btn movie-btn--ghost">
-              Danh sách
-            </Link>
           </div>
           {showSlider && (
             <div className="movie-hero__slider-ui" role="group" aria-label="Chọn slide">

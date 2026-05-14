@@ -1,5 +1,22 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
+
+/** iPhone / iPod / iPad (kể cả iPadOS giả MacIntel). Chrome trên iOS vẫn là iOS — không có beforeinstallprompt. */
+function getIsIOSDevice() {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  if (/iPad|iPhone|iPod/i.test(ua)) return true
+  if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true
+  return false
+}
+
+function getIsStandalone() {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false
+  const mq = window.matchMedia('(display-mode: standalone)')
+  if (mq.matches) return true
+  // Safari iOS: mở từ icon màn hình chính
+  return navigator.standalone === true
+}
 
 /**
  * usePWA — hook tổng hợp quản lý mọi thứ liên quan PWA:
@@ -10,8 +27,12 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
  *   - isInstalled: kiểm tra đã install chưa
  */
 export function usePWA() {
+  const isIOSDevice = useMemo(() => getIsIOSDevice(), [])
+
   // ── Online / Offline status ─────────────────────────────────────
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  )
 
   useEffect(() => {
     const handleOnline  = () => setIsOnline(true)
@@ -29,10 +50,11 @@ export function usePWA() {
   const [isInstalled,   setIsInstalled]   = useState(false)
 
   useEffect(() => {
-    // Kiểm tra đã chạy ở standalone mode (đã install) chưa
+    // Đã cài (standalone / icon màn hình chính trên iOS)
     const mq = window.matchMedia('(display-mode: standalone)')
-    setIsInstalled(mq.matches)
-    const handler = (e) => setIsInstalled(e.matches)
+    const syncInstalled = () => setIsInstalled(getIsStandalone())
+    syncInstalled()
+    const handler = () => syncInstalled()
     mq.addEventListener('change', handler)
 
     // Bắt sự kiện beforeinstallprompt để lưu lại
@@ -98,8 +120,9 @@ export function usePWA() {
   return {
     // Network
     isOnline,
-    // Install
+    // Install — canInstall chỉ true khi có beforeinstallprompt (Chromium), không có trên iOS
     canInstall: !!installPrompt && !isInstalled,
+    isIOSDevice,
     isInstalled,
     triggerInstall,
     // SW Update

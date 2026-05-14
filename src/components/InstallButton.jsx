@@ -1,8 +1,20 @@
+const iosHintStyle = {
+  maxWidth: 'min(100%, 16rem)',
+  padding: '0.5rem 0.75rem',
+  background: 'rgba(59, 130, 246, 0.12)',
+  border: '1px solid rgba(59, 130, 246, 0.35)',
+  borderRadius: '12px',
+  color: 'rgba(226, 232, 240, 0.95)',
+  fontSize: '0.8rem',
+  lineHeight: 1.45,
+}
+
 /**
- * InstallButton — nút "Cài đặt App"
- * Chỉ hiện khi trình duyệt hỗ trợ A2HS và app chưa được cài
+ * InstallButton — cài PWA
+ * - Android / Chrome desktop: dùng beforeinstallprompt (nút vàng).
+ * - iPhone / iPad: Apple không cho prompt lập trình; chỉ hướng dẫn Thêm vào Màn hình chính.
  */
-export function InstallButton({ canInstall, isInstalled, onInstall }) {
+export function InstallButton({ canInstall, isInstalled, isIOSDevice = false, onInstall }) {
   if (isInstalled) {
     return (
       <div style={{
@@ -22,6 +34,42 @@ export function InstallButton({ canInstall, isInstalled, onInstall }) {
     )
   }
 
+  if (isIOSDevice) {
+    return (
+      <details style={iosHintStyle}>
+        <summary
+          style={{
+            cursor: 'pointer',
+            fontWeight: 600,
+            listStyle: 'none',
+          }}
+        >
+          📱 Cài trên iPhone / iPad
+        </summary>
+        <ol
+          style={{
+            margin: '0.6rem 0 0',
+            paddingLeft: '1.1rem',
+            color: 'rgba(226, 232, 240, 0.85)',
+            fontSize: '0.78rem',
+          }}
+        >
+          <li style={{ marginBottom: '0.35rem' }}>
+            <strong>Safari:</strong> bấm nút <strong>Chia sẻ</strong> (ô có mũi tên) →{' '}
+            <strong>Thêm vào Màn hình chính</strong> → Thêm.
+          </li>
+          <li>
+            <strong>Chrome trên iPhone:</strong> menu <strong>⋮</strong> →{' '}
+            <strong>Chia sẻ</strong> → <strong>Thêm vào Màn hình chính</strong>.
+          </li>
+        </ol>
+        <p style={{ margin: '0.5rem 0 0', fontSize: '0.72rem', color: 'rgba(148, 163, 184, 0.95)' }}>
+          iOS không cho website bấm một nút là cài như Android — đây là giới hạn của Apple, không phải lỗi app.
+        </p>
+      </details>
+    )
+  }
+
   if (!canInstall) {
     return (
       <div style={{
@@ -36,7 +84,7 @@ export function InstallButton({ canInstall, isInstalled, onInstall }) {
         fontSize: '0.85rem',
         cursor: 'default',
       }}>
-        📱 Mở trên Chrome/Edge để cài đặt
+        📱 Mở Chrome / Edge (Android hoặc máy tính) để cài một chạm
       </div>
     )
   }

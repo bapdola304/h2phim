@@ -4,6 +4,7 @@ import { DetailToolbar } from '../components/movie/DetailToolbar'
 import { OphimEmbed } from '../components/movie/OphimEmbed'
 import { OphimEpisodePicker } from '../components/movie/OphimEpisodePicker'
 import {
+  getEpisodePlaybackSources,
   normalizeOphimServers,
   ophimImageUrl,
   ophimWatchUrl,
@@ -29,10 +30,12 @@ export default function OphimMoviePage() {
 
   const [serverIndex, setServerIndex] = useState(0)
   const [episodeIndex, setEpisodeIndex] = useState(0)
+  const [mirrorIndex, setMirrorIndex] = useState(0)
 
   useEffect(() => {
     setServerIndex(0)
     setEpisodeIndex(0)
+    setMirrorIndex(0)
   }, [item?._id])
 
   useEffect(() => {
@@ -54,10 +57,27 @@ export default function OphimMoviePage() {
   const onPick = (si, ei) => {
     setServerIndex(si)
     setEpisodeIndex(ei)
+    setMirrorIndex(0)
+  }
+
+  const onMirrorPick = (mi) => {
+    setMirrorIndex(mi)
   }
 
   const currentEp = servers[serverIndex]?.eps?.[episodeIndex]
-  const embedSrc = currentEp?.link_embed || ''
+  const playSources = useMemo(() => getEpisodePlaybackSources(currentEp), [currentEp])
+
+  useEffect(() => {
+    setMirrorIndex((m) => Math.min(m, Math.max(0, playSources.length - 1)))
+  }, [playSources])
+
+  const activePlay = playSources[mirrorIndex]
+  const embedSrc = activePlay?.link_embed || currentEp?.link_embed || ''
+  const hasEpisodeSources = servers.length > 0
+  const embedTitle =
+    currentEp?.name != null
+      ? `${item?.name} — Tập ${currentEp.name}${activePlay && playSources.length > 1 ? ` — ${activePlay.label}` : ''}`
+      : item?.name
 
   const heroImage = item
     ? ophimImageUrl(cdn, item.poster_url || item.thumb_url)
@@ -139,14 +159,6 @@ export default function OphimMoviePage() {
 
           <div className="movie-detail-content">
             <div className="ophim-detail__actions">
-              <a
-                href={ophimWatchUrl(frontend, item.slug)}
-                className="movie-btn movie-btn--ghost"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Mở trên OPhim
-              </a>
               {item.trailer_url && /^https?:\/\//i.test(item.trailer_url) && (
                 <a
                   href={item.trailer_url}
@@ -159,21 +171,29 @@ export default function OphimMoviePage() {
               )}
             </div>
 
-            {embedSrc ? (
-              <>
-                <section className="movie-detail-block" aria-labelledby="watch-heading">
-                  <h2 id="watch-heading" className="movie-detail-block__title">
-                    Xem phim
-                  </h2>
-                  <OphimEmbed src={embedSrc} title={item.name} />
-                </section>
+            {hasEpisodeSources ? (
+              <section className="movie-detail-block" aria-labelledby="watch-heading">
+                <h2 id="watch-heading" className="movie-detail-block__title">
+                  Xem phim
+                </h2>
+                {embedSrc ? (
+                  <OphimEmbed src={embedSrc} title={embedTitle} />
+                ) : (
+                  <p className="movie-empty ophim-detail-embed-placeholder">
+                    Tập đang chọn chưa có link nhúng (embed). Thử đổi server hoặc tập khác.
+                  </p>
+                )}
+                <h3 className="ophim-picker-section-title">Tập phim</h3>
                 <OphimEpisodePicker
                   servers={servers}
                   serverIndex={serverIndex}
                   episodeIndex={episodeIndex}
                   onPick={onPick}
+                  playSources={playSources}
+                  mirrorIndex={mirrorIndex}
+                  onMirrorPick={onMirrorPick}
                 />
-              </>
+              </section>
             ) : (
               <p className="movie-empty">Chưa có nguồn phát cho phim này.</p>
             )}

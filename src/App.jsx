@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import BrowsePage from './pages/BrowsePage'
 import MovieDetailPage from './pages/MovieDetailPage'
 import OphimMoviePage from './pages/OphimMoviePage'
+import OphimDanhSachPage from './pages/OphimDanhSachPage'
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/" element={<MovieShell />}>
           <Route index element={<HomePage />} />
           <Route path="browse" element={<BrowsePage />} />
+          <Route path="danh-sach/:slug" element={<OphimDanhSachPage />} />
           <Route path="movie/:id" element={<MovieDetailPage />} />
           <Route path="phim/:slug" element={<OphimMoviePage />} />
         </Route>

@@ -32,7 +32,7 @@ export function HomeSearchBar({ layout = 'default' }) {
           name="q"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="Tìm phim trên OPhim (từ khóa)…"
+          placeholder="Tìm phim trên H2phim (từ khóa)…"
           autoComplete="off"
           enterKeyHint="search"
         />

@@ -3,7 +3,7 @@ import { Hero } from '../components/movie/Hero'
 import { HomeGenreTiles } from '../components/movie/HomeGenreTiles'
 import { HomeSpotlightRail } from '../components/movie/HomeSpotlightRail'
 import { MovieRow } from '../components/movie/MovieRow'
-import { useOphimHome } from '../hooks/useOphimHome'
+import { useOphimHome, useOphimDanhSach } from '../hooks/useOphimHome'
 import { HOME_GENRE_TILES, HOME_SPOTLIGHTS } from '../data/homeEditorial'
 import { MOVIES } from '../data/movies'
 
@@ -19,6 +19,11 @@ export default function HomePage() {
     movies,
     hasApiData,
   } = useOphimHome()
+
+  const { movies: danhSachPhimChieuRap } = useOphimDanhSach('phim-chieu-rap')
+  const { movies: danhSachPhimLe } = useOphimDanhSach('phim-le')
+  const { movies: danhSachPhimMoi } = useOphimDanhSach('hoat-hinh')
+  const { movies: danhSachPhimBo } = useOphimDanhSach('phim-bo')
 
   const staticTrending = MOVIES.filter((m) => !m.featured).slice(0, 6)
   const staticOriginals = [...MOVIES].reverse().slice(0, 5)
@@ -48,7 +53,7 @@ export default function HomePage() {
     <div className="home-page movie-page-enter">
       {loading && (
         <p className="home-api-status" role="status">
-          Đang tải danh sách từ OPhim…
+          Đang tải danh sách Phim…
         </p>
       )}
       {error && (
@@ -69,23 +74,32 @@ export default function HomePage() {
 
       <Hero movies={heroSlides} variant="home" />
 
-      <HomeSpotlightRail items={displaySpotlights} subtitle={spotlightSubtitle} />
+      {/* <HomeSpotlightRail items={displaySpotlights} subtitle={spotlightSubtitle} /> */}
 
       <MovieRow
         id="trending"
-        title={hasApiData ? 'Phim trên trang chủ OPhim' : 'Đang thịnh hành'}
-        movies={displayTrending}
+        title={hasApiData ? 'Phim Chiếu Rạp' : 'Đang thịnh hành'}
+        movies={danhSachPhimChieuRap}
+        slug="phim-chieu-rap"
       />
-
-      <HomeGenreTiles tiles={HOME_GENRE_TILES} />
-
-      {displayMore.length > 0 && (
-        <MovieRow
-          title={hasApiData ? 'Thêm phim từ OPhim' : 'CineLab Originals'}
-          movies={displayMore}
-          showBrowseLink={!hasApiData}
-        />
-      )}
+      <MovieRow
+        id="trending"
+        title={hasApiData ? 'Phim Lẻ' : 'Đang thịnh hành'}
+        movies={danhSachPhimLe}
+        slug="phim-le"
+      />
+      <MovieRow
+        id="trending"
+        title={hasApiData ? 'Phim Hoạt Hình' : 'Đang thịnh hành'}
+        movies={danhSachPhimMoi}
+        slug="hoat-hinh"
+      />
+      <MovieRow
+        id="trending"
+        title={hasApiData ? 'Phim Bộ' : 'Đang thịnh hành'}
+        movies={danhSachPhimBo}
+        slug="phim-bo"
+      />
     </div>
   )
 }

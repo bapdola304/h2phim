@@ -14,6 +14,7 @@ export default function MovieShell() {
   const {
     isOnline,
     canInstall,
+    isIOSDevice,
     isInstalled,
     triggerInstall,
     offlineReady,
@@ -30,6 +31,7 @@ export default function MovieShell() {
             isOnline={isOnline}
             canInstall={canInstall}
             isInstalled={isInstalled}
+            isIOSDevice={isIOSDevice}
             onInstall={triggerInstall}
           />
         </div>
@@ -38,6 +40,7 @@ export default function MovieShell() {
           isOnline={isOnline}
           canInstall={canInstall}
           isInstalled={isInstalled}
+          isIOSDevice={isIOSDevice}
           onInstall={triggerInstall}
         />
       )}

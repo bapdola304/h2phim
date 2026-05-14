@@ -12,6 +12,9 @@ export default function MovieDetailPage() {
   const [playing, setPlaying] = useState(false)
   const playerAnchor = useRef(null)
 
+  console.log({movie});
+  
+
   useEffect(() => {
     setPlaying(false)
   }, [id])
